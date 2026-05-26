@@ -8,4 +8,58 @@ Key features include **person tabs** that let multiple family members (Mom, Dad,
 
 The project is intentionally local-first and minimal: no servers, no subscriptions, no telemetry, no advertisements, no account creation. It exists to solve one family's problem well, and is open enough that anyone can fork the HTML and adapt it for their own household.
 
+
+**How to Use The Medicine Cabinet**
+
+**Setup (one-time, takes 5 minutes)**
+
+1. Open the app URL in Chrome on your Android phone.
+2. Tap Chrome's three-dot menu → **Install app** (or **Add to Home screen**). The app icon appears on your home screen.
+3. Open the app from the home screen icon.
+4. Tap **Enable** on the notification bar at the top to allow daily reminders. Allow when Android prompts.
+5. The app comes with two default person tabs — **Mom** and **Dad**. To add more people (a child, grandparent, yourself), tap the **+** icon at the end of the tab row and enter a name.
+
+**Adding your medicines**
+
+6. Tap the green **+ Add Medicine** button at the bottom.
+7. Fill in:
+   - **Name** — e.g. "Metformin 500mg" or "Cough Syrup"
+   - **For whom** — select Mom, Dad, or any person you've added
+   - **Type** — choose Tablet or Syrup
+   - For tablets: enter strips in stock, tablets per strip (10 for 2×5, 15 for 3×5), any loose tablets, and morning/afternoon/evening doses
+   - For syrups: enter bottles in stock, ml per bottle, ml left in any opened bottle, and morning/afternoon/evening doses in ml
+   - **Notes** (optional) — e.g. "Take with food," "Shake well"
+   - **Reorder buffer days** — how many days before running out you want to be reminded (default is 5)
+8. Tap **Save**. The medicine appears in the inventory.
+9. Repeat for every medicine in your household.
+
+**Daily use**
+
+10. At the start of each day, open the app. The three large buttons at the top show how many morning/afternoon/evening doses are pending.
+11. After Mom takes her morning meds, tap the **Mom** tab → tap the big **Morning** button. All her morning medicines are marked taken in one tap, stock is automatically deducted, and a log entry is recorded.
+12. Repeat for afternoon and evening as doses are taken.
+13. If only some medicines were taken (say Dad took his BP tablet but not his vitamin), use the individual dose buttons on each medicine card instead of the big "take all" button.
+
+**Checking the reorder schedule**
+
+14. The **batch reorder card** below the dose buttons shows the next date you need to place an order. On the "All" tab it shows the combined household date plus a breakdown for each person individually.
+15. When the card turns amber, reorder is within a week. When it turns red, reorder today.
+16. Place your bulk order on or before that date and update the stock in the app afterward (tap the pencil icon on each medicine to add the new strips/bottles).
+
+**Reviewing history**
+
+17. Tap **View Logs** (next to the item count in the Inventory header) to see complete dose history grouped by date.
+18. Each day shows counts of on-time, late, and missed doses. Filter by person using the buttons at the top of the log view.
+19. Doses not taken before their cutoff time (12 PM for morning, 5 PM for afternoon, midnight for evening) are automatically marked as missed — no manual action needed.
+
+**Backup (recommended weekly)**
+
+20. Scroll to the bottom of the app and tap **Export backup**. A JSON file downloads to your phone.
+21. Save it to Google Drive, email it to yourself, or send via WhatsApp to yourself. This is your safety net if the browser data ever gets cleared.
+22. To restore on a new device or after a clear, tap **Import backup** and select the JSON file.
+
+**Recommended companion setup**
+
+23. In addition to the app's notifications, set three repeating alarms on your phone's native clock app — 8 AM, 2 PM, 8 PM — labeled "Morning meds / Afternoon meds / Evening meds." Native alarms are more reliable than browser notifications on aggressive battery-saving phones, and combining the two gives the most foolproof reminder system.
+
 ---
