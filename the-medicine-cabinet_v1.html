@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Medicine Cabinet</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="The Medicine Cabinet">
+<meta name="theme-color" content="#1f4d3a">
+<!-- Embedded SVG icon (emerald apothecary cross) -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%231f4d3a'/><rect x='42' y='22' width='16' height='56' rx='3' fill='%23fdfbf5'/><rect x='22' y='42' width='56' height='16' rx='3' fill='%23fdfbf5'/><circle cx='50' cy='50' r='6' fill='%23c87b3c'/></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%231f4d3a'/><rect x='42' y='22' width='16' height='56' rx='3' fill='%23fdfbf5'/><rect x='22' y='42' width='56' height='16' rx='3' fill='%23fdfbf5'/><circle cx='50' cy='50' r='6' fill='%23c87b3c'/></svg>">
+<!-- Embedded PWA manifest -->
+<link rel="manifest" href='data:application/manifest+json,{"name":"The Medicine Cabinet","short_name":"Medicines","description":"Household medication tracker with batch reorder timing","start_url":".","display":"standalone","orientation":"portrait","background_color":"%23f5f1e8","theme_color":"%231f4d3a","icons":[{"src":"data:image/svg%2Bxml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><rect width=%27100%27 height=%27100%27 rx=%2718%27 fill=%27%231f4d3a%27/><rect x=%2742%27 y=%2722%27 width=%2716%27 height=%2756%27 rx=%273%27 fill=%27%23fdfbf5%27/><rect x=%2722%27 y=%2742%27 width=%2756%27 height=%2716%27 rx=%273%27 fill=%27%23fdfbf5%27/><circle cx=%2750%27 cy=%2750%27 r=%276%27 fill=%27%23c87b3c%27/></svg>","sizes":"any","type":"image/svg+xml","purpose":"any"}]}'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5f1e8;
+    --cream-deep: #ebe5d3;
+    --ink: #1a2820;
+    --ink-soft: #4a5a52;
+    --emerald: #1f4d3a;
+    --emerald-bright: #2d6e54;
+    --amber: #c87b3c;
+    --crimson: #9b3b3b;
+    --sun: #d4a017;
+    --paper: #fdfbf5;
+    --line: #d8d0bc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 24px 16px 80px;
+    background-image: 
+      radial-gradient(circle at 10% 0%, rgba(45, 110, 84, 0.06) 0%, transparent 40%),
+      radial-gradient(circle at 90% 100%, rgba(200, 123, 60, 0.05) 0%, transparent 40%);
+  }
+  .container { max-width: 760px; margin: 0 auto; }
+  header { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+  .eyebrow {
+    text-transform: uppercase; letter-spacing: 0.2em;
+    font-size: 11px; font-weight: 500; color: var(--ink-soft); margin-bottom: 8px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif; font-weight: 500;
+    font-size: clamp(32px, 7vw, 48px); line-height: 1.05;
+    letter-spacing: -0.02em; color: var(--emerald); font-style: italic;
+  }
+  h1 .amp { font-style: italic; font-weight: 400; color: var(--amber); }
+
+  .tabs {
+    display: flex; gap: 2px; margin-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    background: transparent; border: none; padding: 12px 18px;
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+    color: var(--ink-soft); cursor: pointer;
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: all 0.15s; white-space: nowrap; letter-spacing: 0.02em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab.active { color: var(--emerald); border-bottom-color: var(--emerald); font-weight: 600; }
+  .tab .tab-count {
+    font-size: 10px; background: var(--cream-deep); color: var(--ink-soft);
+    padding: 2px 7px; border-radius: 10px; font-weight: 500;
+  }
+  .tab.active .tab-count { background: var(--emerald); color: var(--paper); }
+  .tab-add { color: var(--amber); font-size: 18px; padding: 12px 14px; }
+
+  .quick-dose {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 2px; padding: 18px; margin-bottom: 24px;
+  }
+  .quick-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--ink-soft); margin-bottom: 12px; font-weight: 500;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .quick-label .scope {
+    color: var(--emerald); font-style: italic; text-transform: none;
+    letter-spacing: 0.02em; font-family: 'Fraunces', serif; font-size: 14px;
+  }
+  .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .quick-btn {
+    background: var(--cream); border: 1px solid var(--line); border-radius: 2px;
+    padding: 14px 8px; cursor: pointer; font-family: 'Inter', sans-serif;
+    transition: all 0.15s; display: flex; flex-direction: column;
+    align-items: center; gap: 4px; color: var(--ink);
+  }
+  .quick-btn:hover:not(:disabled) { background: var(--emerald); color: var(--paper); border-color: var(--emerald); }
+  .quick-btn:disabled { cursor: default; opacity: 0.55; }
+  .quick-btn .icon { font-family: 'Fraunces', serif; font-size: 22px; line-height: 1; }
+  .quick-btn .label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; }
+  .quick-btn .count { font-size: 10px; color: var(--ink-soft); margin-top: 2px; }
+  .quick-btn:hover:not(:disabled) .count { color: var(--paper); opacity: 0.85; }
+  .quick-btn.done { background: var(--emerald); color: var(--paper); border-color: var(--emerald); }
+  .quick-btn.done .count { color: var(--paper); opacity: 0.85; }
+  .quick-btn.morning .icon { color: var(--sun); }
+  .quick-btn.afternoon .icon { color: var(--amber); }
+  .quick-btn.evening .icon { color: var(--emerald); }
+  .quick-btn:hover:not(:disabled) .icon, .quick-btn.done .icon { color: var(--paper); }
+
+  .batch-card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-left: 4px solid var(--emerald);
+    padding: 22px; margin-bottom: 16px; border-radius: 2px;
+  }
+  .batch-card.urgent { border-left-color: var(--crimson); }
+  .batch-card.soon { border-left-color: var(--amber); }
+  .batch-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--ink-soft); margin-bottom: 10px; font-weight: 500;
+  }
+  .batch-date {
+    font-family: 'Fraunces', serif; font-size: clamp(24px, 4.5vw, 32px);
+    font-weight: 500; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.01em;
+  }
+  .batch-days { color: var(--ink-soft); font-size: 14px; }
+  .batch-days strong { color: var(--ink); font-weight: 600; }
+  .batch-empty { font-family: 'Fraunces', serif; font-style: italic; font-size: 18px; color: var(--ink-soft); }
+  .batch-breakdown {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--cream-deep);
+  }
+  .batch-mini {
+    padding: 10px 12px; background: var(--cream); border-radius: 2px;
+    border-left: 3px solid var(--ink-soft);
+  }
+  .batch-mini.urgent { border-left-color: var(--crimson); }
+  .batch-mini.soon { border-left-color: var(--amber); }
+  .batch-mini-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-soft); margin-bottom: 3px; font-weight: 500;
+  }
+  .batch-mini-date { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 500; }
+  .batch-mini-sub { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin: 28px 0 16px; gap: 12px; flex-wrap: wrap;
+  }
+  .section-head h2 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 22px; letter-spacing: -0.01em; }
+  .section-head .right { display: flex; align-items: center; gap: 14px; }
+  .section-head .count { font-size: 12px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.15em; }
+  .logs-btn {
+    background: transparent; border: 1px solid var(--line); color: var(--ink);
+    padding: 7px 14px; border-radius: 2px; font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 500; cursor: pointer;
+    letter-spacing: 0.04em; text-transform: uppercase; transition: all 0.15s;
+  }
+  .logs-btn:hover { border-color: var(--emerald); color: var(--emerald); }
+
+  .med-list { display: flex; flex-direction: column; gap: 10px; }
+  .med-card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 2px; padding: 18px 20px; transition: border-color 0.2s;
+  }
+  .med-card.critical { border-color: var(--crimson); background: #fcf5f3; }
+  .med-card.warning { border-color: var(--amber); background: #fdf7ee; }
+  .med-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+  .med-name { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 500; color: var(--ink); letter-spacing: -0.01em; }
+  .med-for {
+    font-size: 12px; color: var(--emerald); font-weight: 500;
+    margin-top: 2px; text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .med-note {
+    font-size: 12px; color: var(--ink-soft); margin-top: 6px;
+    padding: 6px 10px; background: var(--cream);
+    border-left: 2px solid var(--amber); border-radius: 0 2px 2px 0;
+    font-style: italic; line-height: 1.5;
+  }
+  .med-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .icon-btn {
+    background: transparent; border: 1px solid var(--line); color: var(--ink-soft);
+    width: 30px; height: 30px; border-radius: 2px; cursor: pointer; font-size: 13px;
+    transition: all 0.15s; display: flex; align-items: center; justify-content: center;
+  }
+  .icon-btn:hover { border-color: var(--emerald); color: var(--emerald); }
+  .icon-btn.danger:hover { border-color: var(--crimson); color: var(--crimson); }
+  .med-stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 12px; padding: 14px 0;
+    border-top: 1px solid var(--cream-deep); border-bottom: 1px solid var(--cream-deep);
+    margin-bottom: 14px;
+  }
+  .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-soft); margin-bottom: 3px; }
+  .stat-value { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500; color: var(--ink); }
+  .stat-value.alert { color: var(--crimson); }
+  .stat-value.warn { color: var(--amber); }
+  .med-controls { display: flex; gap: 6px; flex-wrap: wrap; }
+  .dose-btn {
+    flex: 1; min-width: 90px; background: var(--cream);
+    border: 1px solid var(--line); padding: 8px 10px; border-radius: 2px;
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500;
+    color: var(--ink); cursor: pointer; transition: all 0.15s;
+  }
+  .dose-btn:hover:not(:disabled) { background: var(--emerald); color: var(--paper); border-color: var(--emerald); }
+  .dose-btn.taken { background: var(--emerald); color: var(--paper); border-color: var(--emerald); opacity: 0.75; }
+  .dose-btn.late { background: var(--amber); color: var(--paper); border-color: var(--amber); opacity: 0.75; }
+  .dose-btn.missed { background: var(--crimson); color: var(--paper); border-color: var(--crimson); }
+  .dose-btn:disabled { cursor: not-allowed; }
+
+  .add-btn {
+    width: 100%; background: var(--emerald); color: var(--paper);
+    border: none; padding: 14px; border-radius: 2px;
+    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; letter-spacing: 0.04em; text-transform: uppercase;
+    margin-top: 8px; transition: background 0.15s;
+  }
+  .add-btn:hover { background: var(--emerald-bright); }
+
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(26, 40, 32, 0.5);
+    display: none; align-items: center; justify-content: center;
+    padding: 16px; z-index: 100; backdrop-filter: blur(2px);
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--paper); border-radius: 4px;
+    max-width: 540px; width: 100%; max-height: 90vh; overflow-y: auto;
+    padding: 28px; border: 1px solid var(--line);
+  }
+  .modal h3 {
+    font-family: 'Fraunces', serif; font-weight: 500; font-size: 24px;
+    margin-bottom: 20px; color: var(--emerald); font-style: italic;
+  }
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-soft); margin-bottom: 5px; font-weight: 500;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--line);
+    border-radius: 2px; font-family: 'Inter', sans-serif; font-size: 14px;
+    background: var(--cream); color: var(--ink); resize: vertical;
+  }
+  .field textarea { min-height: 60px; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--emerald); }
+  .field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field small { display: block; font-size: 11px; color: var(--ink-soft); margin-top: 4px; font-style: italic; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 22px; }
+  .btn-primary {
+    flex: 1; background: var(--emerald); color: var(--paper); border: none;
+    padding: 12px; border-radius: 2px; font-size: 13px; font-weight: 500;
+    cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .btn-secondary {
+    flex: 1; background: transparent; color: var(--ink-soft);
+    border: 1px solid var(--line); padding: 12px; border-radius: 2px;
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .btn-danger {
+    background: transparent; color: var(--crimson); border: 1px solid var(--line);
+    padding: 10px 14px; border-radius: 2px; font-size: 12px; font-weight: 500;
+    cursor: pointer; margin-top: 8px;
+  }
+
+  .logs-filter { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .logs-filter button {
+    background: var(--cream); border: 1px solid var(--line);
+    padding: 6px 12px; border-radius: 2px; font-size: 12px;
+    cursor: pointer; font-family: inherit; color: var(--ink-soft);
+  }
+  .logs-filter button.active { background: var(--emerald); color: var(--paper); border-color: var(--emerald); }
+  .logs-day { margin-bottom: 18px; }
+  .logs-day-head {
+    font-family: 'Fraunces', serif; font-size: 16px; font-weight: 500;
+    color: var(--emerald); margin-bottom: 8px; padding-bottom: 4px;
+    border-bottom: 1px solid var(--cream-deep);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .logs-day-stats { font-size: 11px; color: var(--ink-soft); font-style: italic; }
+  .log-entry {
+    display: grid; grid-template-columns: 70px 1fr auto; gap: 10px;
+    padding: 7px 0; font-size: 13px;
+    border-bottom: 1px dashed var(--cream-deep); align-items: center;
+  }
+  .log-time { font-family: 'Fraunces', serif; font-weight: 500; color: var(--ink-soft); font-size: 12px; }
+  .log-name { color: var(--ink); }
+  .log-name .who {
+    font-size: 10px; color: var(--emerald); text-transform: uppercase;
+    letter-spacing: 0.08em; margin-left: 6px;
+  }
+  .log-status {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 3px 8px; border-radius: 2px; font-weight: 600;
+  }
+  .log-status.taken { background: var(--emerald); color: var(--paper); }
+  .log-status.late { background: var(--amber); color: var(--paper); }
+  .log-status.missed { background: var(--crimson); color: var(--paper); }
+  .log-empty { text-align: center; padding: 30px; color: var(--ink-soft); font-style: italic; font-family: 'Fraunces', serif; }
+
+  .notif-bar {
+    background: var(--paper); border: 1px solid var(--line);
+    padding: 12px 16px; margin-bottom: 20px; border-radius: 2px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; font-size: 13px; color: var(--ink-soft);
+  }
+  .notif-bar.hidden { display: none; }
+  .notif-bar button {
+    background: var(--ink); color: var(--paper); border: none;
+    padding: 7px 14px; border-radius: 2px; font-size: 12px;
+    cursor: pointer; font-family: inherit; flex-shrink: 0;
+  }
+  .empty { text-align: center; padding: 40px 20px; color: var(--ink-soft); font-style: italic; font-family: 'Fraunces', serif; font-size: 18px; }
+  .footnote {
+    margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line);
+    font-size: 11px; color: var(--ink-soft); text-align: center; line-height: 1.6;
+  }
+  .footnote button { background: none; border: none; color: var(--emerald); text-decoration: underline; cursor: pointer; font-size: 11px; font-family: inherit; }
+
+  @media (max-width: 500px) {
+    .field-row, .field-row-3 { grid-template-columns: 1fr; }
+    .med-top { flex-direction: column; }
+    .med-actions { align-self: flex-end; }
+    .quick-btn { padding: 12px 4px; }
+    .quick-btn .icon { font-size: 18px; }
+    .quick-btn .label { font-size: 10px; }
+    .log-entry { grid-template-columns: 60px 1fr; }
+    .log-entry .log-status { grid-column: 2; justify-self: start; margin-top: 3px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="eyebrow">A Household Apothecary</div>
+    <h1>The Medicine Cabinet</h1>
+  </header>
+
+  <div class="notif-bar" id="notifBar">
+    <span>Enable browser reminders for daily doses?</span>
+    <button onclick="requestNotif()">Enable</button>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="quick-dose">
+    <div class="quick-label">
+      <span>Today's Doses — One Tap For All</span>
+      <span class="scope" id="quickScope">everyone</span>
+    </div>
+    <div class="quick-grid">
+      <button class="quick-btn morning" id="qbMorning" onclick="takeAll('morning')">
+        <span class="icon">☼</span><span class="label">Morning</span><span class="count" id="qcMorning">—</span>
+      </button>
+      <button class="quick-btn afternoon" id="qbAfternoon" onclick="takeAll('afternoon')">
+        <span class="icon">☉</span><span class="label">Afternoon</span><span class="count" id="qcAfternoon">—</span>
+      </button>
+      <button class="quick-btn evening" id="qbEvening" onclick="takeAll('evening')">
+        <span class="icon">☾</span><span class="label">Evening</span><span class="count" id="qcEvening">—</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="batchArea"></div>
+
+  <div class="section-head">
+    <h2>Inventory</h2>
+    <div class="right">
+      <span class="count" id="medCount">0 items</span>
+      <button class="logs-btn" onclick="openLogs()" id="logsBtn">View Logs (0)</button>
+    </div>
+  </div>
+
+  <div class="med-list" id="medList"></div>
+
+  <button class="add-btn" onclick="openModal()">+ Add Medicine</button>
+
+  <div class="footnote">
+    Data stored locally on this device. <button onclick="exportData()">Export backup</button> · <button onclick="importData()">Import backup</button>
+    <input type="file" id="importFile" style="display:none" accept=".json" onchange="handleImport(event)">
+  </div>
+</div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3 id="modalTitle">Add a medicine</h3>
+    <div class="field"><label>Medicine name</label><input type="text" id="f_name" placeholder="e.g. Metformin 500mg / Cough Syrup"></div>
+    <div class="field"><label>For whom</label><select id="f_for"></select></div>
+    <div class="field"><label>Type</label>
+      <select id="f_type" onchange="toggleTypeFields()">
+        <option value="tablet">Tablet / Capsule</option>
+        <option value="syrup">Syrup / Liquid</option>
+      </select>
+    </div>
+
+    <!-- TABLET FIELDS -->
+    <div id="tabletFields">
+      <div class="field-row">
+        <div class="field"><label>Strips in stock</label><input type="number" id="f_strips" min="0" step="1" value="0"></div>
+        <div class="field"><label>Tablets per strip</label><input type="number" id="f_perStrip" min="1" step="1" value="10"><small>e.g. 10 for 2×5 strip, 15 for 3×5</small></div>
+      </div>
+      <div class="field"><label>Loose tablets (outside strips)</label><input type="number" id="f_loose" min="0" step="1" value="0"></div>
+      <div class="field-row-3">
+        <div class="field"><label>Morning</label><input type="number" id="f_morning" min="0" step="0.5" value="1"></div>
+        <div class="field"><label>Afternoon</label><input type="number" id="f_afternoon" min="0" step="0.5" value="0"></div>
+        <div class="field"><label>Evening</label><input type="number" id="f_evening" min="0" step="0.5" value="1"></div>
+      </div>
+    </div>
+
+    <!-- SYRUP FIELDS -->
+    <div id="syrupFields" style="display:none;">
+      <div class="field-row">
+        <div class="field"><label>Bottles in stock</label><input type="number" id="f_bottles" min="0" step="1" value="1"></div>
+        <div class="field"><label>ml per bottle</label><input type="number" id="f_perBottle" min="1" step="1" value="200"><small>e.g. 100, 200, 450</small></div>
+      </div>
+      <div class="field"><label>ml remaining in opened bottle</label><input type="number" id="f_mlLoose" min="0" step="1" value="0"><small>Leave 0 if no bottle is currently open</small></div>
+      <div class="field-row-3">
+        <div class="field"><label>Morning (ml)</label><input type="number" id="f_morningMl" min="0" step="0.5" value="0"></div>
+        <div class="field"><label>Afternoon (ml)</label><input type="number" id="f_afternoonMl" min="0" step="0.5" value="0"></div>
+        <div class="field"><label>Evening (ml)</label><input type="number" id="f_eveningMl" min="0" step="0.5" value="10"></div>
+      </div>
+    </div>
+
+    <div class="field"><label>Notes <span style="text-transform:none;letter-spacing:0;font-style:italic;font-weight:400">(optional)</span></label><textarea id="f_note" placeholder="e.g. Shake well. Take with food."></textarea></div>
+    <div class="field"><label>Reorder buffer days</label><input type="number" id="f_buffer" min="0" step="1" value="5"><small>Reorder this many days before running out</small></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveMedicine()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="personModalBg">
+  <div class="modal">
+    <h3>Add a person</h3>
+    <div class="field"><label>Name</label><input type="text" id="f_personName" placeholder="e.g. Mom, Dad, Grandma"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closePersonModal()">Cancel</button>
+      <button class="btn-primary" onclick="savePerson()">Add</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="logsModalBg">
+  <div class="modal" style="max-width: 620px;">
+    <h3 style="display:flex; justify-content:space-between; align-items:center;">
+      Dose History
+      <button class="icon-btn" onclick="closeLogs()" style="font-size:18px;">×</button>
+    </h3>
+    <div class="logs-filter" id="logsFilter"></div>
+    <div id="logsContent"></div>
+    <button class="btn-danger" onclick="clearOldLogs()">Clear logs older than 30 days</button>
+  </div>
+</div>
+
+<script>
+  let meds = JSON.parse(localStorage.getItem('meds_v3') || '[]');
+  let people = JSON.parse(localStorage.getItem('people_v1') || '["Mom","Dad"]');
+  let logs = JSON.parse(localStorage.getItem('logs_v1') || '[]');
+  let activeTab = localStorage.getItem('activeTab_v1') || 'all';
+  let logsFilter = 'all';
+
+  // Migrate from v2
+  const v2 = localStorage.getItem('meds_v2');
+  if (v2 && meds.length === 0) {
+    try { meds = JSON.parse(v2); localStorage.setItem('meds_v3', JSON.stringify(meds)); } catch {}
+  }
+
+  // Backward-compat: any medicine without 'type' is a tablet
+  meds.forEach(m => { if (!m.type) m.type = 'tablet'; });
+
+  let editId = null;
+
+  function saveAll() {
+    localStorage.setItem('meds_v3', JSON.stringify(meds));
+    localStorage.setItem('people_v1', JSON.stringify(people));
+    localStorage.setItem('logs_v1', JSON.stringify(logs));
+    localStorage.setItem('activeTab_v1', activeTab);
+  }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function escapeAttr(s) { return String(s).replace(/'/g, "\\'").replace(/"/g, '\\"'); }
+
+  function filteredMeds() {
+    if (activeTab === 'all') return meds;
+    return meds.filter(m => (m.forWhom || '') === activeTab);
+  }
+  function isSyrup(m) { return m.type === 'syrup'; }
+  function unitShort(m) { return isSyrup(m) ? 'ml' : ''; }
+  function stockLabel(m) { return isSyrup(m) ? 'ml left' : 'Tablets left'; }
+  function stockLeft(m) {
+    if (isSyrup(m)) return (m.bottles || 0) * (m.perBottle || 0) + (m.mlLoose || 0);
+    return (m.strips || 0) * (m.perStrip || 0) + (m.loose || 0);
+  }
+  function dailyUse(m) { return (m.morning || 0) + (m.afternoon || 0) + (m.evening || 0); }
+  function daysLeft(m) { const use = dailyUse(m); if (use <= 0) return Infinity; return Math.floor(stockLeft(m) / use); }
+  function reorderInDays(m) { return daysLeft(m) - (m.buffer || 0); }
+  function batchDaysFor(list) {
+    if (list.length === 0) return null;
+    const valid = list.filter(m => dailyUse(m) > 0);
+    if (valid.length === 0) return null;
+    return Math.min(...valid.map(m => reorderInDays(m)));
+  }
+  function formatDate(daysFromNow) {
+    const d = new Date(); d.setDate(d.getDate() + daysFromNow);
+    return d.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+
+  function deductStock(m, amount) {
+    if (isSyrup(m)) {
+      let remaining = amount;
+      if ((m.mlLoose || 0) >= remaining) { m.mlLoose -= remaining; return; }
+      remaining -= (m.mlLoose || 0); m.mlLoose = 0;
+      while (remaining > 0 && m.bottles > 0) {
+        m.bottles -= 1; m.mlLoose = m.perBottle;
+        if (m.mlLoose >= remaining) { m.mlLoose -= remaining; remaining = 0; }
+        else { remaining -= m.mlLoose; m.mlLoose = 0; }
+      }
+    } else {
+      let remaining = amount;
+      if ((m.loose || 0) >= remaining) { m.loose -= remaining; return; }
+      remaining -= (m.loose || 0); m.loose = 0;
+      while (remaining > 0 && m.strips > 0) {
+        m.strips -= 1; m.loose = m.perStrip;
+        if (m.loose >= remaining) { m.loose -= remaining; remaining = 0; }
+        else { remaining -= m.loose; m.loose = 0; }
+      }
+    }
+  }
+
+  function isLate(time, now) {
+    const h = now.getHours();
+    if (time === 'morning') return h >= 12;
+    if (time === 'afternoon') return h >= 17;
+    return false;
+  }
+
+  function findLog(medId, date, time) {
+    return logs.find(l => l.medId === medId && l.date === date && l.time === time);
+  }
+  function recordDose(medId, time, status) {
+    const now = new Date();
+    const today = now.toDateString();
+    const existing = findLog(medId, today, time);
+    const med = meds.find(m => m.id === medId);
+    if (!med) return;
+    const entry = {
+      medId, medName: med.name, who: med.forWhom || '',
+      date: today, time, status,
+      timestamp: now.toISOString(), doseAmt: med[time] || 0
+    };
+    if (existing) Object.assign(existing, entry);
+    else logs.push(entry);
+  }
+
+  function takeDose(id, time) {
+    const m = meds.find(x => x.id === id);
+    if (!m) return;
+    const today = new Date().toDateString();
+    const lastKey = 'last' + cap(time);
+    if (m[lastKey] === today) return;
+    if ((m[time] || 0) <= 0) return;
+    deductStock(m, m[time]);
+    m[lastKey] = today;
+    const now = new Date();
+    recordDose(id, time, isLate(time, now) ? 'late' : 'taken');
+    saveAll(); render();
+  }
+
+  function takeAll(time) {
+    const today = new Date().toDateString();
+    const lastKey = 'last' + cap(time);
+    const now = new Date();
+    const status = isLate(time, now) ? 'late' : 'taken';
+    let count = 0;
+    filteredMeds().forEach(m => {
+      if ((m[time] || 0) > 0 && m[lastKey] !== today) {
+        deductStock(m, m[time]);
+        m[lastKey] = today;
+        recordDose(m.id, time, status);
+        count++;
+      }
+    });
+    if (count > 0) { saveAll(); render(); }
+  }
+
+  // Auto-skip detection
+  function checkMissedDoses() {
+    const now = new Date();
+    const h = now.getHours();
+    const today = now.toDateString();
+    meds.forEach(m => {
+      if (h >= 12 && (m.morning || 0) > 0 && m.lastMorning !== today) {
+        if (!findLog(m.id, today, 'morning')) recordDose(m.id, 'morning', 'missed');
+      }
+      if (h >= 17 && (m.afternoon || 0) > 0 && m.lastAfternoon !== today) {
+        if (!findLog(m.id, today, 'afternoon')) recordDose(m.id, 'afternoon', 'missed');
+      }
+    });
+    // Evening: check yesterday's evening doses (anything past midnight = missed)
+    const yesterday = new Date(now.getTime() - 86400000).toDateString();
+    meds.forEach(m => {
+      if ((m.evening || 0) > 0 && m.lastEvening !== yesterday) {
+        // Only record missed if there's any activity log for yesterday (proves app was in use)
+        const hadActivity = logs.some(l => l.date === yesterday) || 
+                            meds.some(mm => mm.lastMorning === yesterday || mm.lastAfternoon === yesterday);
+        if (hadActivity && !findLog(m.id, yesterday, 'evening')) {
+          recordDose(m.id, 'evening', 'missed');
+          // Need to adjust timestamp to yesterday for sorting
+          const entry = findLog(m.id, yesterday, 'evening');
+          if (entry) {
+            const ystampDate = new Date(now.getTime() - 86400000);
+            ystampDate.setHours(23, 59, 0);
+            entry.timestamp = ystampDate.toISOString();
+          }
+        }
+      }
+    });
+    saveAll();
+  }
+
+  // Fix: recordDose uses today's date — for evening missed we need yesterday
+  function recordMissedEvening(medId, yesterday) {
+    const med = meds.find(m => m.id === medId);
+    if (!med) return;
+    const yDate = new Date(); yDate.setDate(yDate.getDate() - 1); yDate.setHours(23, 59, 0);
+    logs.push({
+      medId, medName: med.name, who: med.forWhom || '',
+      date: yesterday, time: 'evening', status: 'missed',
+      timestamp: yDate.toISOString(), doseAmt: med.evening || 0
+    });
+  }
+
+  // Replace the simple version with a corrected check
+  function checkMissedDosesCorrect() {
+    const now = new Date();
+    const h = now.getHours();
+    const today = now.toDateString();
+    const yesterday = new Date(now.getTime() - 86400000).toDateString();
+
+    meds.forEach(m => {
+      if (h >= 12 && (m.morning || 0) > 0 && m.lastMorning !== today) {
+        if (!findLog(m.id, today, 'morning')) recordDose(m.id, 'morning', 'missed');
+      }
+      if (h >= 17 && (m.afternoon || 0) > 0 && m.lastAfternoon !== today) {
+        if (!findLog(m.id, today, 'afternoon')) recordDose(m.id, 'afternoon', 'missed');
+      }
+      // Evening missed = yesterday's evening dose wasn't taken
+      if ((m.evening || 0) > 0 && m.lastEvening !== yesterday) {
+        const hadActivity = logs.some(l => l.date === yesterday);
+        if (hadActivity && !findLog(m.id, yesterday, 'evening')) {
+          recordMissedEvening(m.id, yesterday);
+        }
+      }
+    });
+    saveAll();
+  }
+
+  function startMissedCheckLoop() {
+    checkMissedDosesCorrect();
+    setInterval(checkMissedDosesCorrect, 5 * 60 * 1000);
+  }
+
+  function render() {
+    renderTabs();
+    renderQuickBar();
+    renderBatch();
+    renderList();
+    const list = filteredMeds();
+    document.getElementById('medCount').textContent = list.length + (list.length === 1 ? ' item' : ' items');
+    const btn = document.getElementById('logsBtn');
+    if (btn) btn.textContent = `View Logs (${logs.length})`;
+  }
+
+  function renderTabs() {
+    const allCount = meds.length;
+    let html = `<button class="tab ${activeTab==='all'?'active':''}" onclick="setTab('all')">All <span class="tab-count">${allCount}</span></button>`;
+    people.forEach(p => {
+      const c = meds.filter(m => m.forWhom === p).length;
+      html += `<button class="tab ${activeTab===p?'active':''}" onclick="setTab('${escapeAttr(p)}')">${escapeHtml(p)} <span class="tab-count">${c}</span></button>`;
+    });
+    html += `<button class="tab tab-add" onclick="openPersonModal()" title="Add person">+</button>`;
+    document.getElementById('tabs').innerHTML = html;
+  }
+
+  function setTab(t) { activeTab = t; saveAll(); render(); }
+
+  function renderQuickBar() {
+    const today = new Date().toDateString();
+    const scope = filteredMeds();
+    document.getElementById('quickScope').textContent = activeTab === 'all' ? 'everyone' : `for ${activeTab}`;
+    ['morning', 'afternoon', 'evening'].forEach(time => {
+      const lastKey = 'last' + cap(time);
+      const total = scope.filter(m => (m[time] || 0) > 0).length;
+      const pending = scope.filter(m => (m[time] || 0) > 0 && m[lastKey] !== today).length;
+      const btn = document.getElementById('qb' + cap(time));
+      const cnt = document.getElementById('qc' + cap(time));
+      if (total === 0) { cnt.textContent = 'none'; btn.disabled = true; btn.classList.remove('done'); }
+      else if (pending === 0) { cnt.textContent = `all ${total} taken`; btn.disabled = true; btn.classList.add('done'); }
+      else { cnt.textContent = `${pending} pending`; btn.disabled = false; btn.classList.remove('done'); }
+    });
+  }
+
+  function batchClass(days) {
+    if (days === null) return '';
+    if (days <= 3) return 'urgent';
+    if (days <= 7) return 'soon';
+    return '';
+  }
+  function batchContent(days) {
+    if (days === null) return '<div class="batch-empty">No active medicines.</div>';
+    let label;
+    if (days <= 0) label = `<strong>Order today.</strong> Some medicines are at or past the buffer.`;
+    else if (days <= 3) label = `In <strong>${days} day${days===1?'':'s'}</strong> — order soon.`;
+    else if (days <= 7) label = `In <strong>${days} days</strong>.`;
+    else label = `In <strong>${days} days</strong>.`;
+    return `<div class="batch-date">${formatDate(days)}</div><div class="batch-days">${label}</div>`;
+  }
+
+  function renderBatch() {
+    const area = document.getElementById('batchArea');
+    if (activeTab === 'all') {
+      const combinedDays = batchDaysFor(meds);
+      let html = `<div class="batch-card ${batchClass(combinedDays)}">
+        <div class="batch-label">Common Batch Reorder · Everyone</div>
+        ${batchContent(combinedDays)}`;
+      const breakdowns = people.map(p => {
+        const list = meds.filter(m => m.forWhom === p);
+        return { name: p, days: batchDaysFor(list), count: list.length };
+      }).filter(b => b.count > 0);
+      if (breakdowns.length > 0) {
+        html += `<div class="batch-breakdown">`;
+        breakdowns.forEach(b => {
+          html += `<div class="batch-mini ${batchClass(b.days)}">
+            <div class="batch-mini-label">${escapeHtml(b.name)}'s Reorder</div>
+            <div class="batch-mini-date">${b.days === null ? '—' : formatDate(b.days)}</div>
+            <div class="batch-mini-sub">${b.days === null ? 'no active meds' : (b.days <= 0 ? 'Order today' : `In ${b.days} day${b.days===1?'':'s'}`)}</div>
+          </div>`;
+        });
+        html += `</div>`;
+      }
+      html += `</div>`;
+      area.innerHTML = html;
+    } else {
+      const list = filteredMeds();
+      const days = batchDaysFor(list);
+      area.innerHTML = `<div class="batch-card ${batchClass(days)}">
+        <div class="batch-label">${escapeHtml(activeTab)}'s Batch Reorder</div>
+        ${batchContent(days)}
+      </div>`;
+    }
+  }
+
+  function renderList() {
+    const list = document.getElementById('medList');
+    const scope = filteredMeds();
+    if (scope.length === 0) {
+      list.innerHTML = `<div class="empty">${activeTab === 'all' ? 'The cabinet is empty.' : `No medicines for ${escapeHtml(activeTab)} yet.`}</div>`;
+      return;
+    }
+    const sorted = [...scope].sort((a, b) => reorderInDays(a) - reorderInDays(b));
+    const today = new Date().toDateString();
+    list.innerHTML = sorted.map(m => {
+      const dl = daysLeft(m);
+      const rd = reorderInDays(m);
+      const stock = stockLeft(m);
+      const syrup = isSyrup(m);
+      const unit = syrup ? 'ml' : '';
+      let cardClass = '', daysClass = '';
+      if (rd <= 0) { cardClass = 'critical'; daysClass = 'alert'; }
+      else if (rd <= 5) { cardClass = 'warning'; daysClass = 'warn'; }
+
+      const buttonHtml = (time, icon) => {
+        if (!(m[time] > 0)) return '';
+        const lastKey = 'last' + cap(time);
+        const taken = m[lastKey] === today;
+        const log = findLog(m.id, today, time);
+        let cls = '', txt = '';
+        const doseLabel = syrup ? `${m[time]}ml` : `${m[time]}`;
+        if (taken) {
+          if (log && log.status === 'late') { cls = 'late'; txt = `✓ ${cap(time)} · late`; }
+          else { cls = 'taken'; txt = `✓ ${cap(time)}`; }
+        } else if (log && log.status === 'missed') {
+          cls = 'missed'; txt = `${icon} ${cap(time)} · missed (take now)`;
+        } else {
+          txt = `${icon} ${cap(time)} (${doseLabel})`;
+        }
+        return `<button class="dose-btn ${cls}" ${taken ? 'disabled' : ''} onclick="takeDose('${m.id}', '${time}')">${txt}</button>`;
+      };
+
+      const typeBadge = syrup ? '<span style="display:inline-block; font-size:10px; background:var(--amber); color:var(--paper); padding:2px 7px; border-radius:2px; letter-spacing:0.08em; text-transform:uppercase; margin-left:6px; vertical-align:middle;">Syrup</span>' : '';
+
+      return `
+        <div class="med-card ${cardClass}">
+          <div class="med-top">
+            <div style="flex:1; min-width:0;">
+              <div class="med-name">${escapeHtml(m.name)}${typeBadge}</div>
+              ${m.forWhom ? `<div class="med-for">${escapeHtml(m.forWhom)}</div>` : ''}
+              ${m.note ? `<div class="med-note">${escapeHtml(m.note)}</div>` : ''}
+            </div>
+            <div class="med-actions">
+              <button class="icon-btn" onclick="editMed('${m.id}')" title="Edit">✎</button>
+              <button class="icon-btn danger" onclick="deleteMed('${m.id}')" title="Delete">×</button>
+            </div>
+          </div>
+          <div class="med-stats">
+            <div><div class="stat-label">${syrup ? 'ml left' : 'Tablets left'}</div><div class="stat-value">${stock}${unit ? ' '+unit : ''}</div></div>
+            <div><div class="stat-label">Days left</div><div class="stat-value ${daysClass}">${dl === Infinity ? '—' : dl}</div></div>
+            <div><div class="stat-label">Reorder in</div><div class="stat-value ${daysClass}">${rd === Infinity ? '—' : (rd <= 0 ? 'Now' : rd + 'd')}</div></div>
+            <div><div class="stat-label">Daily ${syrup ? 'ml' : 'dose'}</div><div class="stat-value">${dailyUse(m)}${unit ? ' '+unit : ''}</div></div>
+          </div>
+          <div class="med-controls">
+            ${buttonHtml('morning', '☼')}
+            ${buttonHtml('afternoon', '☉')}
+            ${buttonHtml('evening', '☾')}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function populatePersonSelect() {
+    const sel = document.getElementById('f_for');
+    sel.innerHTML = '<option value="">— Unassigned —</option>' +
+      people.map(p => `<option value="${escapeAttr(p)}">${escapeHtml(p)}</option>`).join('');
+  }
+
+  function toggleTypeFields() {
+    const type = document.getElementById('f_type').value;
+    document.getElementById('tabletFields').style.display = type === 'syrup' ? 'none' : 'block';
+    document.getElementById('syrupFields').style.display = type === 'syrup' ? 'block' : 'none';
+  }
+
+  function openModal(id) {
+    populatePersonSelect();
+    editId = id || null;
+    document.getElementById('modalTitle').textContent = id ? 'Edit medicine' : 'Add a medicine';
+    if (id) {
+      const m = meds.find(x => x.id === id);
+      const type = m.type || 'tablet';
+      document.getElementById('f_name').value = m.name;
+      document.getElementById('f_for').value = m.forWhom || '';
+      document.getElementById('f_type').value = type;
+      document.getElementById('f_note').value = m.note || '';
+      document.getElementById('f_buffer').value = m.buffer;
+      if (type === 'syrup') {
+        document.getElementById('f_bottles').value = m.bottles || 0;
+        document.getElementById('f_perBottle').value = m.perBottle || 200;
+        document.getElementById('f_mlLoose').value = m.mlLoose || 0;
+        document.getElementById('f_morningMl').value = m.morning || 0;
+        document.getElementById('f_afternoonMl').value = m.afternoon || 0;
+        document.getElementById('f_eveningMl').value = m.evening || 0;
+      } else {
+        document.getElementById('f_strips').value = m.strips || 0;
+        document.getElementById('f_perStrip').value = m.perStrip || 10;
+        document.getElementById('f_loose').value = m.loose || 0;
+        document.getElementById('f_morning').value = m.morning || 0;
+        document.getElementById('f_afternoon').value = m.afternoon || 0;
+        document.getElementById('f_evening').value = m.evening || 0;
+      }
+    } else {
+      document.getElementById('f_name').value = '';
+      document.getElementById('f_for').value = activeTab !== 'all' ? activeTab : '';
+      document.getElementById('f_type').value = 'tablet';
+      document.getElementById('f_strips').value = 0;
+      document.getElementById('f_perStrip').value = 10;
+      document.getElementById('f_loose').value = 0;
+      document.getElementById('f_morning').value = 1;
+      document.getElementById('f_afternoon').value = 0;
+      document.getElementById('f_evening').value = 1;
+      document.getElementById('f_bottles').value = 1;
+      document.getElementById('f_perBottle').value = 200;
+      document.getElementById('f_mlLoose').value = 0;
+      document.getElementById('f_morningMl').value = 0;
+      document.getElementById('f_afternoonMl').value = 0;
+      document.getElementById('f_eveningMl').value = 10;
+      document.getElementById('f_note').value = '';
+      document.getElementById('f_buffer').value = 5;
+    }
+    toggleTypeFields();
+    document.getElementById('modalBg').classList.add('open');
+  }
+  function closeModal() { document.getElementById('modalBg').classList.remove('open'); editId = null; }
+
+  function saveMedicine() {
+    const name = document.getElementById('f_name').value.trim();
+    if (!name) { alert('Please enter a medicine name'); return; }
+    const type = document.getElementById('f_type').value;
+    let data = {
+      name,
+      forWhom: document.getElementById('f_for').value,
+      type,
+      note: document.getElementById('f_note').value.trim(),
+      buffer: parseInt(document.getElementById('f_buffer').value) || 0,
+    };
+    if (type === 'syrup') {
+      data.bottles = parseInt(document.getElementById('f_bottles').value) || 0;
+      data.perBottle = parseInt(document.getElementById('f_perBottle').value) || 1;
+      data.mlLoose = parseFloat(document.getElementById('f_mlLoose').value) || 0;
+      data.morning = parseFloat(document.getElementById('f_morningMl').value) || 0;
+      data.afternoon = parseFloat(document.getElementById('f_afternoonMl').value) || 0;
+      data.evening = parseFloat(document.getElementById('f_eveningMl').value) || 0;
+      // Clear tablet fields
+      data.strips = 0; data.perStrip = 0; data.loose = 0;
+    } else {
+      data.strips = parseInt(document.getElementById('f_strips').value) || 0;
+      data.perStrip = parseInt(document.getElementById('f_perStrip').value) || 1;
+      data.loose = parseInt(document.getElementById('f_loose').value) || 0;
+      data.morning = parseFloat(document.getElementById('f_morning').value) || 0;
+      data.afternoon = parseFloat(document.getElementById('f_afternoon').value) || 0;
+      data.evening = parseFloat(document.getElementById('f_evening').value) || 0;
+      data.bottles = 0; data.perBottle = 0; data.mlLoose = 0;
+    }
+    if (editId) {
+      const idx = meds.findIndex(x => x.id === editId);
+      meds[idx] = { ...meds[idx], ...data };
+    } else {
+      meds.push({ id: uid(), ...data, lastMorning: null, lastAfternoon: null, lastEvening: null });
+    }
+    saveAll(); render(); closeModal();
+  }
+  function editMed(id) { openModal(id); }
+  function deleteMed(id) {
+    const m = meds.find(x => x.id === id);
+    if (!confirm(`Remove "${m.name}" from the cabinet?`)) return;
+    meds = meds.filter(x => x.id !== id);
+    saveAll(); render();
+  }
+
+  function openPersonModal() {
+    document.getElementById('f_personName').value = '';
+    document.getElementById('personModalBg').classList.add('open');
+  }
+  function closePersonModal() { document.getElementById('personModalBg').classList.remove('open'); }
+  function savePerson() {
+    const name = document.getElementById('f_personName').value.trim();
+    if (!name) { alert('Please enter a name'); return; }
+    if (people.includes(name)) { alert('That person already exists'); return; }
+    people.push(name);
+    saveAll(); closePersonModal(); render();
+  }
+
+  function openLogs() {
+    logsFilter = 'all';
+    renderLogsFilter();
+    renderLogs();
+    document.getElementById('logsModalBg').classList.add('open');
+  }
+  function closeLogs() { document.getElementById('logsModalBg').classList.remove('open'); }
+  function setLogsFilter(f) { logsFilter = f; renderLogsFilter(); renderLogs(); }
+  function renderLogsFilter() {
+    let html = `<button class="${logsFilter==='all'?'active':''}" onclick="setLogsFilter('all')">All people</button>`;
+    people.forEach(p => {
+      html += `<button class="${logsFilter===p?'active':''}" onclick="setLogsFilter('${escapeAttr(p)}')">${escapeHtml(p)}</button>`;
+    });
+    document.getElementById('logsFilter').innerHTML = html;
+  }
+  function renderLogs() {
+    const el = document.getElementById('logsContent');
+    let filtered = logs;
+    if (logsFilter !== 'all') filtered = logs.filter(l => l.who === logsFilter);
+    if (filtered.length === 0) {
+      el.innerHTML = `<div class="log-empty">No dose history yet.<br><br><span style="font-style:normal; font-size:13px; font-family:'Inter',sans-serif;">Tap a morning, afternoon, or evening dose button on any medicine to create your first log entry. Missed doses will also appear here automatically.</span><br><br><span style="font-style:normal; font-size:12px; font-family:'Inter',sans-serif; color:var(--ink-soft);">Total entries stored: ${logs.length}<br>Filter active: ${logsFilter}</span></div>`;
+      return;
+    }
+    const byDate = {};
+    filtered.forEach(l => { if (!byDate[l.date]) byDate[l.date] = []; byDate[l.date].push(l); });
+    const sortedDates = Object.keys(byDate).sort((a, b) => new Date(b) - new Date(a));
+    let html = '';
+    sortedDates.forEach(date => {
+      const dayLogs = byDate[date].sort((a, b) => {
+        const order = { morning: 0, afternoon: 1, evening: 2 };
+        if (order[a.time] !== order[b.time]) return order[a.time] - order[b.time];
+        return new Date(a.timestamp) - new Date(b.timestamp);
+      });
+      const taken = dayLogs.filter(l => l.status === 'taken').length;
+      const late = dayLogs.filter(l => l.status === 'late').length;
+      const missed = dayLogs.filter(l => l.status === 'missed').length;
+      const today = new Date().toDateString();
+      const yesterday = new Date(Date.now() - 86400000).toDateString();
+      let dateLabel;
+      if (date === today) dateLabel = 'Today';
+      else if (date === yesterday) dateLabel = 'Yesterday';
+      else dateLabel = new Date(date).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+      html += `<div class="logs-day">
+        <div class="logs-day-head">
+          <span>${dateLabel}</span>
+          <span class="logs-day-stats">${taken} on-time · ${late} late · ${missed} missed</span>
+        </div>`;
+      dayLogs.forEach(l => {
+        const t = new Date(l.timestamp);
+        const timeStr = l.status === 'missed' ? cap(l.time) : t.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+        html += `<div class="log-entry">
+          <div class="log-time">${timeStr}</div>
+          <div class="log-name">${escapeHtml(l.medName)}${l.who ? `<span class="who">${escapeHtml(l.who)}</span>` : ''}</div>
+          <div class="log-status ${l.status}">${l.status === 'late' ? 'Late' : l.status === 'missed' ? 'Missed' : 'Taken'}</div>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+    el.innerHTML = html;
+  }
+  function clearOldLogs() {
+    if (!confirm('Delete all logs older than 30 days?')) return;
+    const cutoff = Date.now() - 30 * 86400000;
+    logs = logs.filter(l => new Date(l.timestamp).getTime() >= cutoff);
+    saveAll(); renderLogs();
+  }
+
+  function checkNotifPermission() {
+    if (!('Notification' in window)) { document.getElementById('notifBar').classList.add('hidden'); return; }
+    if (Notification.permission === 'granted' || Notification.permission === 'denied') {
+      document.getElementById('notifBar').classList.add('hidden');
+    }
+  }
+  function requestNotif() {
+    Notification.requestPermission().then(perm => {
+      document.getElementById('notifBar').classList.add('hidden');
+      if (perm === 'granted') {
+        new Notification('Medicine Cabinet', { body: 'Reminders are on. You\'ll be alerted at 8 AM, 2 PM, and 8 PM.' });
+        scheduleDailyReminders();
+      }
+    });
+  }
+  function scheduleDailyReminders() {
+    setInterval(() => {
+      if (Notification.permission !== 'granted') return;
+      const now = new Date();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      const today = now.toDateString();
+      const checkTime = (hr, time, lastKey, label) => {
+        if (h === hr && m === 0) {
+          const pending = meds.filter(x => (x[time] || 0) > 0 && x[lastKey] !== today);
+          if (pending.length > 0) {
+            new Notification(`${label} medicines`, {
+              body: pending.map(p => `• ${p.name}${p.forWhom ? ' ('+p.forWhom+')' : ''}`).join('\n'),
+              tag: time + '-' + today
+            });
+          }
+        }
+      };
+      checkTime(8, 'morning', 'lastMorning', 'Morning');
+      checkTime(14, 'afternoon', 'lastAfternoon', 'Afternoon');
+      checkTime(20, 'evening', 'lastEvening', 'Evening');
+      if (h === 9 && m === 0) {
+        const days = batchDaysFor(meds);
+        if (days !== null && days <= 3) {
+          new Notification('Time to reorder', {
+            body: days <= 0 ? 'Some medicines need reordering today.' : `Batch reorder in ${days} day${days===1?'':'s'}.`,
+            tag: 'reorder-' + today
+          });
+        }
+      }
+    }, 60000);
+  }
+
+  function exportData() {
+    const backup = { meds, people, logs };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'medicine-cabinet-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+  function importData() { document.getElementById('importFile').click(); }
+  function handleImport(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (Array.isArray(data)) {
+          if (!confirm(`Import ${data.length} medicines? This replaces your current list.`)) return;
+          meds = data;
+        } else if (data.meds) {
+          if (!confirm(`Import ${data.meds.length} medicines, ${(data.people||[]).length} people, and ${(data.logs||[]).length} log entries? This replaces your current data.`)) return;
+          meds = data.meds || [];
+          people = data.people || people;
+          logs = data.logs || [];
+        } else throw new Error('Invalid');
+        saveAll(); render();
+      } catch {
+        alert('Could not read that file.');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  checkNotifPermission();
+  if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+    scheduleDailyReminders();
+  }
+  startMissedCheckLoop();
+  render();
+</script>
+</body>
+</html>
